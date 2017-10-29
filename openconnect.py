@@ -24,7 +24,8 @@ def parseJson(data):
                     creds = creds + c['username'] + '\n' + c['password'] + '\n'
             elif s['credentials']['type'] == 'stoken':
                 p = subprocess.Popen(['stoken'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-                creds =  p.stdout.read().strip()
+                creds = s['credentials']['values'][0]['username'] + '\n';
+                creds =  creds + p.stdout.read().strip() + '\n';
             break
 
     return { 'server': server, 'credentials': creds }
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         config_file = sys.argv[2]
 
-    with open(expanduser('~') + '/.config/network/openconnect.config') as config_file:
-        config = parseJson(config_file)
+    with open(config_file) as cfh:
+        config = parseJson(cfh)
         openconnect(config['server'], config['credentials'])
     
