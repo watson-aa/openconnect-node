@@ -1,5 +1,5 @@
-# openconnect-node
-**NodeJS wrapper for OpenConnect VPN client**
+# openconnect-python
+**Python wrapper for OpenConnect VPN client**
 
 Default config file should be in *~/.config/network/openconnect.config*
 
