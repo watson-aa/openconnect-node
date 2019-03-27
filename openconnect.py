@@ -6,12 +6,14 @@ import json
 
 from os.path import expanduser
 
-def openconnect(server, creds, script):
+def openconnect(server, creds, script, protocol):
     if server != '':
         command = ['/usr/local/bin/openconnect', str(server)]
         if script != '':
             command.append('-s')
             command.append(script)
+        if protocol != '':
+            command.append('--protocol=' + protocol)
 
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
         grep_stdout = p.communicate(input=str(creds))[0]
@@ -22,12 +24,16 @@ def parseJson(data):
     server = ''
     creds = ''
     script = ''
+    protocol = ''
     for s in config['servers']:
         if sys.argv[1] == s['name']:
             server = s['server']
 
             if s.has_key('script'):
                 script = s['script']
+
+            if s.has_key('protocol'):
+                protocol = s['protocol']
 
             if s['credentials']['type'] == 'basic':
                 for c in s['credentials']['values']:
@@ -38,7 +44,7 @@ def parseJson(data):
                 creds =  creds + p.stdout.read().strip() + '\n';
             break
 
-    return { 'server': server, 'credentials': creds, 'script': script }
+    return { 'server': server, 'credentials': creds, 'script': script, 'protocol': protocol }
 
 if __name__ == "__main__":
     config_file = expanduser('~') + '/.config/network/openconnect.config'
@@ -47,5 +53,5 @@ if __name__ == "__main__":
 
     with open(config_file) as cfh:
         config = parseJson(cfh)
-        openconnect(config['server'], config['credentials'], config['script'])
+        openconnect(config['server'], config['credentials'], config['script'], config['protocol'])
     
