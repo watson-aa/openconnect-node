@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Add one IP to the list of split tunnel
+add_ip ()
+{
+	export CISCO_SPLIT_INC_${CISCO_SPLIT_INC}_ADDR=$1
+        export CISCO_SPLIT_INC_${CISCO_SPLIT_INC}_MASK=255.255.255.255
+        export CISCO_SPLIT_INC_${CISCO_SPLIT_INC}_MASKLEN=32
+        export CISCO_SPLIT_INC=$(($CISCO_SPLIT_INC + 1))
+}
+
+# Add IP subnet to the list of split tunnel
+add_sub ()
+{
+	export CISCO_SPLIT_INC_${CISCO_SPLIT_INC}_ADDR=$1
+        export CISCO_SPLIT_INC_${CISCO_SPLIT_INC}_MASK=$2
+        export CISCO_SPLIT_INC_${CISCO_SPLIT_INC}_MASKLEN=$3
+        export CISCO_SPLIT_INC=$(($CISCO_SPLIT_INC + 1))
+}
+
+unset CISCO_SPLIT_INC
+
+# Initialize empty split tunnel list
+export CISCO_SPLIT_INC=0
+
+# Delete DNS info provided by VPN server to use internet DNS
+# Comment following line to use DNS beyond VPN tunnel
+unset INTERNAL_IP4_DNS
+
+# internal DNS servers
+#export INTERNAL_IP4_DNS="10.129.12.51 10.129.12.53 8.8.8.8"
+
+# subnets to route across the VPN tunnel
+add_sub 161.247.0.0 255.255.0.0 32
+add_sub 10.30.0.0 255.255.0.0 32
+add_sub 10.177.0.0 255.255.0.0 32
+add_sub 10.129.0.0 255.255.0.0 32
+
+# Execute default script
+. /usr/local/etc/vpnc-script
